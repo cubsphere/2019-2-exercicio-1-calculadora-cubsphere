@@ -10,49 +10,71 @@ import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
-    private fun setButtonClick (bid: Int, txt: CharSequence, field: EditText) {
-        findViewById<Button>(bid).setOnClickListener { field.append(txt) }
+    //adiciona ao botão bid um listener
+    //o listener adiciona txt ao input
+    private fun setButtonListenerToAppend (bid: Int, txt: CharSequence, input: EditText) {
+        findViewById<Button>(bid).setOnClickListener { input.append(txt) }
+    }
+
+    //adiciona o listener apropriado a cada botão de texto
+    private fun setExpressionBuildingButtonListeners (input: EditText) {
+        setButtonListenerToAppend(R.id.btn_0, "0", input)
+        setButtonListenerToAppend(R.id.btn_3, "3", input)
+        setButtonListenerToAppend(R.id.btn_1, "1", input)
+        setButtonListenerToAppend(R.id.btn_2, "2", input)
+        setButtonListenerToAppend(R.id.btn_4, "4", input)
+        setButtonListenerToAppend(R.id.btn_5, "5", input)
+        setButtonListenerToAppend(R.id.btn_6, "6", input)
+        setButtonListenerToAppend(R.id.btn_7, "7", input)
+        setButtonListenerToAppend(R.id.btn_8, "8", input)
+        setButtonListenerToAppend(R.id.btn_9, "9", input)
+        setButtonListenerToAppend(R.id.btn_Add, "+", input)
+        setButtonListenerToAppend(R.id.btn_Subtract, "-", input)
+        setButtonListenerToAppend(R.id.btn_Multiply, "*", input)
+        setButtonListenerToAppend(R.id.btn_Divide, "/", input)
+        setButtonListenerToAppend(R.id.btn_Power, "^", input)
+        setButtonListenerToAppend(R.id.btn_LParen, "(", input)
+        setButtonListenerToAppend(R.id.btn_RParen, ")", input)
+        setButtonListenerToAppend(R.id.btn_Dot, ".", input)
+    }
+
+    //limpa o campo de input
+    private fun setClearButtonListener(input: EditText) {
+        findViewById<Button>(R.id.btn_Clear).setOnClickListener {
+            input.setText("")
+        }
+    }
+
+    //avalia a expressão
+    //se tudo der certo, exibe a expressão e sua avaliação no display e limpa o campo de input
+    //senão, exibe um toast com a mensagem de erro
+    private fun setEvaluateButtonListener(input: EditText, display: TextView) {
+        findViewById<Button>(R.id.btn_Equal).setOnClickListener {
+            val result: Double
+            try {
+                result = eval(input.text.toString())
+                display.setText(input.text.append(" = ").append(result.toString()).toString())
+            } catch (err: RuntimeException) {
+                Toast.makeText(applicationContext, err.localizedMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    //adiciona todos os listeners necessários
+    private fun setButtonListeners() {
+        val input = findViewById<EditText>(R.id.text_calc)
+        val display = findViewById<TextView>(R.id.text_info)
+
+        setExpressionBuildingButtonListeners(input)
+        setClearButtonListener(input)
+        setEvaluateButtonListener(input, display)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val input = findViewById<EditText>(R.id.text_calc)
-        val display = findViewById<TextView>(R.id.text_info)
-
-        setButtonClick(R.id.btn_0, "0", input)
-        setButtonClick(R.id.btn_1, "1", input)
-        setButtonClick(R.id.btn_2, "2", input)
-        setButtonClick(R.id.btn_3, "3", input)
-        setButtonClick(R.id.btn_4, "4", input)
-        setButtonClick(R.id.btn_5, "5", input)
-        setButtonClick(R.id.btn_6, "6", input)
-        setButtonClick(R.id.btn_7, "7", input)
-        setButtonClick(R.id.btn_8, "8", input)
-        setButtonClick(R.id.btn_9, "9", input)
-        setButtonClick(R.id.btn_Add, "+", input)
-        setButtonClick(R.id.btn_Subtract, "-", input)
-        setButtonClick(R.id.btn_Multiply, "*", input)
-        setButtonClick(R.id.btn_Divide, "/", input)
-        setButtonClick(R.id.btn_Power, "^", input)
-        setButtonClick(R.id.btn_LParen, "(", input)
-        setButtonClick(R.id.btn_RParen, ")", input)
-        setButtonClick(R.id.btn_Dot, ".", input)
-
-        findViewById<Button>(R.id.btn_Clear).setOnClickListener {
-            input.setText("")
-        }
-        findViewById<Button>(R.id.btn_Equal).setOnClickListener {
-            val result: Double
-            try {
-                result = eval(input.text.toString())
-                display.setText(input.text.append(" = ").append(result.toString()).toString())
-                input.setText("")
-            } catch (err: RuntimeException) {
-                Toast.makeText(applicationContext, err.localizedMessage, Toast.LENGTH_LONG).show()
-            }
-        }
+        setButtonListeners()
     }
 
 
