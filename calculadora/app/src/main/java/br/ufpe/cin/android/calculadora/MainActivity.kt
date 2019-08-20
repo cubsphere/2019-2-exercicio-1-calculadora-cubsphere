@@ -2,12 +2,57 @@ package br.ufpe.cin.android.calculadora
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+
 
 class MainActivity : AppCompatActivity() {
+
+    private fun setButtonClick (bid: Int, txt: CharSequence, field: EditText) {
+        findViewById<Button>(bid).setOnClickListener { field.append(txt) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val input = findViewById<EditText>(R.id.text_calc)
+        val display = findViewById<TextView>(R.id.text_info)
+
+        setButtonClick(R.id.btn_0, "0", input)
+        setButtonClick(R.id.btn_1, "1", input)
+        setButtonClick(R.id.btn_2, "2", input)
+        setButtonClick(R.id.btn_3, "3", input)
+        setButtonClick(R.id.btn_4, "4", input)
+        setButtonClick(R.id.btn_5, "5", input)
+        setButtonClick(R.id.btn_6, "6", input)
+        setButtonClick(R.id.btn_7, "7", input)
+        setButtonClick(R.id.btn_8, "8", input)
+        setButtonClick(R.id.btn_9, "9", input)
+        setButtonClick(R.id.btn_Add, "+", input)
+        setButtonClick(R.id.btn_Subtract, "-", input)
+        setButtonClick(R.id.btn_Multiply, "*", input)
+        setButtonClick(R.id.btn_Divide, "/", input)
+        setButtonClick(R.id.btn_Power, "^", input)
+        setButtonClick(R.id.btn_LParen, "(", input)
+        setButtonClick(R.id.btn_RParen, ")", input)
+        setButtonClick(R.id.btn_Dot, ".", input)
+
+        findViewById<Button>(R.id.btn_Clear).setOnClickListener {
+            input.setText("")
+        }
+        findViewById<Button>(R.id.btn_Equal).setOnClickListener {
+            val result: Double
+            try {
+                result = eval(input.text.toString())
+                display.setText(input.text.append(" = ").append(result.toString()).toString())
+                input.setText("")
+            } catch (err: RuntimeException) {
+                Toast.makeText(applicationContext, err.localizedMessage, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 
