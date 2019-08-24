@@ -2,6 +2,7 @@ package br.ufpe.cin.android.calculadora
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -9,11 +10,19 @@ import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity() {
+    //variável setada para true quando o usuario aperta "="
+    private var shouldClear = false
 
     //adiciona ao botão bid um listener
     //o listener adiciona txt ao input
     private fun setButtonListenerToAppend (bid: Int, txt: CharSequence, input: EditText) {
-        findViewById<Button>(bid).setOnClickListener { input.append(txt) }
+        findViewById<Button>(bid).setOnClickListener {
+            if (this.shouldClear) {
+                this.clear(input)
+                this.shouldClear = false
+            }
+            input.append(txt)
+        }
     }
 
     //adiciona o listener apropriado a cada botão de texto
@@ -39,9 +48,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     //limpa o campo de input
+    private fun clear(input: EditText) {
+        input.setText("")
+    }
+
     private fun setClearButtonListener(input: EditText) {
         findViewById<Button>(R.id.btn_Clear).setOnClickListener {
-            input.setText("")
+            this.clear(input)
         }
     }
 
@@ -54,6 +67,8 @@ class MainActivity : AppCompatActivity() {
             try {
                 result = eval(input.text.toString())
                 display.setText(input.text.append(" = ").append(result.toString()).toString())
+                //limpar o input quando o usuário tentar inserir uma nova expressão
+                this.shouldClear = true
             } catch (err: RuntimeException) {
                 Toast.makeText(applicationContext, err.localizedMessage, Toast.LENGTH_LONG).show()
             }
@@ -77,6 +92,30 @@ class MainActivity : AppCompatActivity() {
         setButtonListeners()
     }
 
+    //armazena toda informação relevante do estado da aplicação
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val input = findViewById<EditText>(R.id.text_calc)
+        val display = findViewById<TextView>(R.id.text_info)
+
+        outState.putString("input", input.text.toString())
+        outState.putString("display", display.text.toString())
+        outState.putBoolean("shouldClear", this.shouldClear)
+    }
+
+    //restaura toda informação relevante do estado da aplicação
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val input = findViewById<EditText>(R.id.text_calc)
+        val display = findViewById<TextView>(R.id.text_info)
+
+        val inputString = savedInstanceState.getString("input", "")
+        val displayString = savedInstanceState.getString("display", "")
+        this.shouldClear = savedInstanceState.getBoolean("shouldClear", false)
+
+        input.setText(inputString)
+        display.setText(displayString)
+    }
 
     //Como usar a função:
     // eval("2+2") == 4.0
